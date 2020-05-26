@@ -48,6 +48,13 @@ namespace Laba3
             updateThread = new Thread(Update);
             updateThread.Start();
 
+            int N = shader.materials.Length;
+            for (int i = 0; i < N; i++)
+            {
+                listBox1.Items.Add(i);
+            }
+            listBox1.SelectedIndex = 0;
+
             this.Closed += CloseEvent;
         }
 
@@ -157,6 +164,31 @@ namespace Laba3
         {
             TrackBar trackBar = sender as TrackBar;
             shader.lightRefraction = new Vector3((float)trackBar.Value / (float)trackBar.Maximum);
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+            Shader.Material material = shader.materials[(int)listBox1.SelectedItem];
+            //materialColor.Text = material.Color.X + " " + material.Color.Y + " " + material.Color.Z;
+            //LightCoeffs.Text = material.LightCoeffs.X + " " + material.LightCoeffs.Y + " " + material.LightCoeffs.Z + " " + material.LightCoeffs.W;
+            //ReflectionCoef.Text = Convert.ToString(material.ReflectionCoef);
+            //RefractionCoef.Text = Convert.ToString(material.RefractionCoef);
+            //MaterialType.Text = Convert.ToString(material.MaterilaType);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+           //float[] tmp = materialColor.Text.Trim().Split().Select((s) => Convert.ToSingle(s)).ToArray();
+           // float[] tmp2 = LightCoeffs.Text.Trim().Split().Select((s) => Convert.ToSingle(s)).ToArray();
+            //S/hader.Material material = new Shader.Material(
+                //new OpenTK.Vector3(tmp[0], tmp[1], tmp[2]),
+             //   new OpenTK.Vector4(tmp2[0], tmp2[1], tmp2[2], tmp2[3]),
+                //Convert.ToSingle(ReflectionCoef.Text.Trim()),
+               // Convert.ToSingle(RefractionCoef.Text.Trim()),
+               // Convert.ToInt32(MaterialType.Text.Trim())
+            //);
+            //shader.setMaterial((int)listBox1.SelectedItem, material);
         }
     }
 }

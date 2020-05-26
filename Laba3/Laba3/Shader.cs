@@ -13,6 +13,12 @@ class Shader
         public OpenTK.Vector3 lightReflection;
         public OpenTK.Vector3 lightRefraction;
         public OpenTK.Vector3 boxPosition;
+    public const int DIFFUSE_REFLECTION = 1;
+    public const int MIRROR_REFLECTION = 2;
+    public const int REFRACTION = 3;
+
+    public const int countMaterials = 9;
+    public Material[] materials = new Material[countMaterials];
         public OpenTK.Vector3 boxColor;
     
         public Shader(int width, int height)
@@ -27,15 +33,51 @@ class Shader
             GL.ShadeModel(ShadingModel.Smooth);
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
-
+        
             Resize(width, height);
+        fillMaterials();
 
-            id = GL.CreateProgram();
+        id = GL.CreateProgram();
 
             InitShader(width, height);
         }
-    
-        private void InitShader(int width, int height)
+
+        public struct Material
+        {
+            public OpenTK.Vector3 Color;
+            public OpenTK.Vector4 LightCoeffs;
+            public float ReflectionCoef;
+            public float RefractionCoef;
+            public int MaterilaType;
+            public Material(OpenTK.Vector3 col, OpenTK.Vector4 Light, float reflection, float refraction, int type)
+            {
+                Color = col;
+                LightCoeffs = Light;
+                ReflectionCoef = reflection;
+                RefractionCoef = refraction;
+                MaterilaType = type;
+            }
+        }
+    public void setMaterial(int i, Material material)
+    {
+        materials[i] = material;
+    }
+
+    private void fillMaterials()
+    {
+        OpenTK.Vector4 lightCoeffs = new OpenTK.Vector4(0.4f, 0.9f, 0.2f, 2.0f);
+        materials[0] = new Material(new OpenTK.Vector3(0, 1, 0), lightCoeffs, 0.5f, 1, DIFFUSE_REFLECTION);
+        materials[1] = new Material(new OpenTK.Vector3(1, 0, 0), lightCoeffs, 0.5f, 1, DIFFUSE_REFLECTION);
+        materials[2] = new Material(new OpenTK.Vector3(0, 0, 1), lightCoeffs, 0.5f, 1, DIFFUSE_REFLECTION);
+        materials[3] = new Material(new OpenTK.Vector3(1, 1, 0), lightCoeffs, 0.5f, 1, MIRROR_REFLECTION);
+        materials[4] = new Material(new OpenTK.Vector3(0, 1, 1), lightCoeffs, 0.5f, 1, DIFFUSE_REFLECTION);
+        materials[5] = new Material(new OpenTK.Vector3(1, 0, 1), lightCoeffs, 1, 1, MIRROR_REFLECTION);
+        materials[6] = new Material(new OpenTK.Vector3(0.5f, 0.5f, 1), lightCoeffs, 1, 1.5f, REFRACTION);
+        materials[7] = new Material(new OpenTK.Vector3(0.5f, 0.5f, 0.5f), lightCoeffs, 1, 1.5f, DIFFUSE_REFLECTION);
+        materials[8] = new Material(new OpenTK.Vector3(0.5f, 0.5f, 1), lightCoeffs, 1, 1.5f, DIFFUSE_REFLECTION);
+    }
+
+    private void InitShader(int width, int height)
         {
             string repositoryPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), @"..\..\"));
 
@@ -109,8 +151,9 @@ class Shader
             GL.Uniform3(GL.GetUniformLocation(id, "BOX_CENTER"), boxPosition);
             GL.Uniform3(GL.GetUniformLocation(id, "BOX_SIZE"), boxSize);
             GL.Uniform3(GL.GetUniformLocation(id, "BOX_COLOR"), boxColor);
+            GL.Uniform3(GL.GetUniformLocation(id, "BOX_MATERIAL"), boxColor);
 
-            GL.Begin(PrimitiveType.Quads);
+        GL.Begin(PrimitiveType.Quads);
 
             GL.Vertex2(-width, -height);
             GL.Vertex2(width, -height);

@@ -43,6 +43,9 @@
             this.yBar = new System.Windows.Forms.TrackBar();
             this.xBar = new System.Windows.Forms.TrackBar();
             this.sizeBar = new System.Windows.Forms.TrackBar();
+            this.label9 = new System.Windows.Forms.Label();
+            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.refractionBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reflectionBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.colorBar)).BeginInit();
@@ -188,11 +191,44 @@
             this.sizeBar.TabIndex = 15;
             this.sizeBar.Scroll += new System.EventHandler(this.boxSizeBar_Scroll);
             // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label9.Location = new System.Drawing.Point(1072, 172);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(99, 13);
+            this.label9.TabIndex = 31;
+            this.label9.Text = "Номер материала";
+            // 
+            // listBox1
+            // 
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.Location = new System.Drawing.Point(1075, 188);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(120, 95);
+            this.listBox1.TabIndex = 30;
+            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            // 
+            // button1
+            // 
+            this.button1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.button1.Location = new System.Drawing.Point(1075, 289);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(129, 23);
+            this.button1.TabIndex = 32;
+            this.button1.Text = "Применить материал";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1294, 706);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.listBox1);
             this.Controls.Add(this.refractionBar);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
@@ -243,6 +279,9 @@
         private System.Windows.Forms.TrackBar yBar;
         private System.Windows.Forms.TrackBar xBar;
         private System.Windows.Forms.TrackBar sizeBar;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.Button button1;
     }
 }
 
