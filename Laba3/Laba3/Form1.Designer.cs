@@ -45,6 +45,7 @@
             this.sizeBar = new System.Windows.Forms.TrackBar();
             this.label9 = new System.Windows.Forms.Label();
             this.listBox1 = new System.Windows.Forms.ListBox();
+            this.jopa = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.refractionBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reflectionBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.colorBar)).BeginInit();
@@ -209,11 +210,22 @@
             this.listBox1.TabIndex = 30;
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
+            // jopa
+            // 
+            this.jopa.AutoSize = true;
+            this.jopa.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.jopa.Location = new System.Drawing.Point(1009, 374);
+            this.jopa.Name = "jopa";
+            this.jopa.Size = new System.Drawing.Size(32, 13);
+            this.jopa.TabIndex = 32;
+            this.jopa.Text = "Цвет";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1294, 706);
+            this.Controls.Add(this.jopa);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.listBox1);
             this.Controls.Add(this.refractionBar);
@@ -268,6 +280,7 @@
         private System.Windows.Forms.TrackBar sizeBar;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.Label jopa;
     }
 }
 

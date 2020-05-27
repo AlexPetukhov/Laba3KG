@@ -16,8 +16,8 @@ const int MIRROR_REFLECTION  = 2;
 const int REFRACTION = 3;
 
 const int SPHERES_COUNT   = 3;
-const int TRIANGLES_COUNT = 10 + 12;
-const int MATERIAL_COUNT  = 6;
+const int TRIANGLES_COUNT = 10 + 12 + 2;
+const int MATERIAL_COUNT  = 7;
 const int STACK_LENGTH    = 10;
 
 const vec3 COLOR_RED    = vec3(1.0, 0.0, 0.0);
@@ -112,7 +112,7 @@ Cam InitCameraDefaults() {
 	camera.Up 		= vec3(0.0, 1.0,  0.0);
 	camera.View	 	= vec3(0.0, 0.0,  1.0);
 	camera.Side 	= vec3(1.0, 0.0,  0.0);
-	camera.Position	= vec3(0.0, 0.0, -8.0);
+	camera.Position	= vec3(0.0, 0.0, -4.5);
 	camera.Scale 	= vec2(1.0);
 	return camera;
 }
@@ -175,6 +175,12 @@ void initializeDefaultLightMaterials(out SLight light, out SMaterial materials[M
 	materials[5].ReflectionCoef = LIGHT_REFLECTION.x;
 	materials[5].RefractionCoef = LIGHT_REFRACTION.x;
 	materials[5].MaterialType 	= MATERIAL_DIFFUSE;
+
+	materials[6].Color 			= COLOR_BLUE;
+	materials[6].LightCoeffs 	= lightCoefs;
+	materials[6].ReflectionCoef = LIGHT_REFLECTION.x;
+	materials[6].RefractionCoef = LIGHT_REFRACTION.x;
+	materials[6].MaterialType 	= MATERIAL_REFLECTION;
 }
 
 void initializeDefaultScene( out STriangle triangles[TRIANGLES_COUNT], out SSphere spheres[SPHERES_COUNT] ) {
@@ -205,6 +211,19 @@ void initializeDefaultScene( out STriangle triangles[TRIANGLES_COUNT], out SSphe
 	triangles[3].v3 = vec3( 5.0,-5.0, 5.0);
 	triangles[3].MaterialIdx = 0;
 	triangles[3].MaterialType = materials[triangles[3].MaterialIdx].MaterialType;
+
+	/* front wall */
+	triangles[22].v1 = vec3(-5.0,-5.0, -5.0);
+	triangles[22].v2 = vec3( 5.0,-5.0, -5.0);
+	triangles[22].v3 = vec3(-5.0, 5.0, -5.0);
+	triangles[22].MaterialIdx = 0;
+	triangles[22].MaterialType = materials[triangles[22].MaterialIdx].MaterialType;
+	
+	triangles[23].v1 = vec3( 5.0, -5.0, -5.0);
+	triangles[23].v2 = vec3( 5.0, 5.0, -5.0);
+	triangles[23].v3 = vec3( -5.0,5.0, -5.0);
+	triangles[23].MaterialIdx = 0;
+	triangles[23].MaterialType = materials[triangles[23].MaterialIdx].MaterialType;
 	
 	/* right wall */
 	triangles[4].v1 = vec3( 5.0,-5.0,-5.0);
@@ -513,7 +532,6 @@ void main ( void ) {
 		if (Raytrace(ray, start, final, intersect)) {
 			switch (intersect.MaterialType) {
 				case DIFFUSE_REFLECTION: {
-				
 					float shadow = Shadow(light, intersect);
 					resultColor += sray.contribution * Phong(intersect, light, shadow);
 					break;
@@ -539,25 +557,22 @@ void main ( void ) {
 					break;
 				}
 				
-				case MIRROR_REFLECTION: {
-				
-					if (intersect.ReflectionCoef < 1.0) {
+			
+				case MIRROR_REFLECTION:{
+					if(intersect.ReflectionCoef < 1){
+						float contribution = sray.contribution * (1 - intersect.ReflectionCoef);
 						float shadow = Shadow(light, intersect);
-						float contribution = sray.contribution * (1.0 - intersect.ReflectionCoef);
-						
 						resultColor += contribution * Phong(intersect, light, shadow);
+						break;
 					}
-					
 					vec3 reflectDirection = reflect(ray.Direction, intersect.Normal);
-					
 					float contribution = sray.contribution * intersect.ReflectionCoef;
 					STracingRay reflectRay = STracingRay(
 						Ray(intersect.Point + reflectDirection * EPSILON, reflectDirection),
-						contribution, sray.depth + 1);
-					
+						contribution, sray.depth + 1
+						);
 					pushRay(reflectRay);
 					break;
-					
 				}
 			}
 		}

@@ -157,7 +157,9 @@ namespace Laba3
         private void reflectionBar_Scroll(object sender, EventArgs e)
         {
             TrackBar trackBar = sender as TrackBar;
-            shader.lightReflection = new Vector3((float)trackBar.Value / (float)trackBar.Maximum);
+            float kek = (float)trackBar.Value / (float)trackBar.Maximum;
+            shader.lightReflection = new Vector3(kek);
+            jopa.Text = kek.ToString();
         }
 
         private void refractionBar_Scroll(object sender, EventArgs e)
