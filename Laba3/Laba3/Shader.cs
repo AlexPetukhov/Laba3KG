@@ -8,7 +8,9 @@ class Shader
         private int width;
         private int height;
         private int id;
-        public OpenTK.Vector3 boxSize;
+    public OpenTK.Vector3 boxSize;
+    public OpenTK.Vector3 boxMaterial;
+    
         public OpenTK.Vector3 lightPostion;
         public OpenTK.Vector3 lightReflection;
         public OpenTK.Vector3 lightRefraction;
@@ -28,7 +30,9 @@ class Shader
             lightReflection = new OpenTK.Vector3(0.5f);
             lightRefraction = new OpenTK.Vector3(20.0f);
             boxSize = new OpenTK.Vector3(0.5f);
-            boxColor = new OpenTK.Vector3(4.0f);
+        boxColor = new OpenTK.Vector3(4.0f);
+        boxMaterial = new OpenTK.Vector3(1);
+        
 
             GL.ShadeModel(ShadingModel.Smooth);
             GL.MatrixMode(MatrixMode.Projection);
@@ -151,7 +155,7 @@ class Shader
             GL.Uniform3(GL.GetUniformLocation(id, "BOX_CENTER"), boxPosition);
             GL.Uniform3(GL.GetUniformLocation(id, "BOX_SIZE"), boxSize);
             GL.Uniform3(GL.GetUniformLocation(id, "BOX_COLOR"), boxColor);
-            GL.Uniform3(GL.GetUniformLocation(id, "BOX_MATERIAL"), boxColor);
+            GL.Uniform3(GL.GetUniformLocation(id, "BOX_MATERIAL"), boxMaterial);
 
         GL.Begin(PrimitiveType.Quads);
 

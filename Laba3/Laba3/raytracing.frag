@@ -13,6 +13,7 @@ const int MATERIAL_REFRACTION = 3;
 
 const int DIFFUSE_REFLECTION = 1;
 const int MIRROR_REFLECTION  = 2;
+const int REFRACTION = 3;
 
 const int SPHERES_COUNT   = 3;
 const int TRIANGLES_COUNT = 10 + 12;
@@ -29,6 +30,7 @@ const vec3 COLOR_WHITE  = vec3(1.0, 1.0, 1.0);
 uniform vec3 BOX_SIZE;
 uniform vec3 BOX_CENTER;
 uniform vec3 BOX_COLOR;
+uniform vec3 BOX_MATERIAL;
 uniform vec3 LIGHT_POSITION;
 uniform vec3 LIGHT_REFLECTION;
 uniform vec3 LIGHT_REFRACTION;
@@ -46,6 +48,7 @@ struct STriangle {
 	vec3 v2;
 	vec3 v3;
 	int  MaterialIdx;
+	int MaterialType;
 };
 
 struct Cam {
@@ -182,55 +185,65 @@ void initializeDefaultScene( out STriangle triangles[TRIANGLES_COUNT], out SSphe
 	triangles[0].v2 = vec3(-5.0, 5.0, 5.0);
 	triangles[0].v3 = vec3(-5.0, 5.0,-5.0);
 	triangles[0].MaterialIdx = 1;
+	triangles[0].MaterialType = materials[triangles[0].MaterialIdx].MaterialType;
 	
 	triangles[1].v1 = vec3(-5.0,-5.0,-5.0);
 	triangles[1].v2 = vec3(-5.0,-5.0, 5.0);
 	triangles[1].v3 = vec3(-5.0, 5.0, 5.0);
 	triangles[1].MaterialIdx = 1;
+	triangles[1].MaterialType = materials[triangles[1].MaterialIdx].MaterialType;
 	
 	/* back wall */
 	triangles[2].v1 = vec3(-5.0,-5.0, 5.0);
 	triangles[2].v2 = vec3( 5.0,-5.0, 5.0);
 	triangles[2].v3 = vec3(-5.0, 5.0, 5.0);
 	triangles[2].MaterialIdx = 0;
+	triangles[2].MaterialType = materials[triangles[2].MaterialIdx].MaterialType;
 	
 	triangles[3].v1 = vec3( 5.0, 5.0, 5.0);
 	triangles[3].v2 = vec3(-5.0, 5.0, 5.0);
 	triangles[3].v3 = vec3( 5.0,-5.0, 5.0);
 	triangles[3].MaterialIdx = 0;
+	triangles[3].MaterialType = materials[triangles[3].MaterialIdx].MaterialType;
 	
 	/* right wall */
 	triangles[4].v1 = vec3( 5.0,-5.0,-5.0);
 	triangles[4].v2 = vec3( 5.0, 5.0,-5.0);
 	triangles[4].v3 = vec3( 5.0,-5.0, 5.0);
 	triangles[4].MaterialIdx = 3;
+	triangles[4].MaterialType = materials[triangles[4].MaterialIdx].MaterialType;
 	
 	triangles[5].v1 = vec3( 5.0, 5.0, 5.0);
 	triangles[5].v2 = vec3( 5.0,-5.0, 5.0);
 	triangles[5].v3 = vec3( 5.0, 5.0,-5.0);
 	triangles[5].MaterialIdx = 3;
+	triangles[5].MaterialType = materials[triangles[5].MaterialIdx].MaterialType;
 	
 	/* bottom wall */
 	triangles[6].v1 = vec3(-5.0,-5.0, 5.0);
 	triangles[6].v2 = vec3(-5.0,-5.0,-5.0);
 	triangles[6].v3 = vec3( 5.0,-5.0, 5.0);
 	triangles[6].MaterialIdx = 4;
+	triangles[6].MaterialType = materials[triangles[6].MaterialIdx].MaterialType;
 	
 	triangles[7].v1 = vec3( 5.0,-5.0, 5.0);
 	triangles[7].v2 = vec3(-5.0,-5.0,-5.0);
 	triangles[7].v3 = vec3( 5.0,-5.0,-5.0);
 	triangles[7].MaterialIdx = 4;
+	triangles[7].MaterialType = materials[triangles[7].MaterialIdx].MaterialType;
 	
 	/* top wall */
 	triangles[8].v1 = vec3( 5.0, 5.0, 5.0);
 	triangles[8].v2 = vec3( 5.0, 5.0,-5.0);
 	triangles[8].v3 = vec3(-5.0, 5.0, 5.0);
 	triangles[8].MaterialIdx = 4;
+	triangles[8].MaterialType = materials[triangles[8].MaterialIdx].MaterialType;
 	
 	triangles[9].v1 = vec3(-5.0, 5.0,-5.0);
 	triangles[9].v2 = vec3(-5.0, 5.0, 5.0);
 	triangles[9].v3 = vec3( 5.0, 5.0,-5.0);
 	triangles[9].MaterialIdx = 4;
+	triangles[9].MaterialType = materials[triangles[9].MaterialIdx].MaterialType;
 	
 			/* Box */
 	// top
@@ -238,66 +251,78 @@ void initializeDefaultScene( out STriangle triangles[TRIANGLES_COUNT], out SSphe
 	triangles[10].v2 = vec3( (BOX_CENTER.x - BOX_SIZE.x / 2.0), (BOX_CENTER.y + BOX_SIZE.x / 2.0), (BOX_CENTER.z - BOX_SIZE.x / 2.0));
 	triangles[10].v3 = vec3( (BOX_CENTER.x + BOX_SIZE.x / 2.0), (BOX_CENTER.y + BOX_SIZE.x / 2.0), (BOX_CENTER.z + BOX_SIZE.x / 2.0));
 	triangles[10].MaterialIdx = int(BOX_COLOR.x);
+	triangles[10].MaterialType = int(BOX_MATERIAL.x);
 	
 	triangles[11].v1 = vec3( (BOX_CENTER.x + BOX_SIZE.x / 2.0), (BOX_CENTER.y + BOX_SIZE.x / 2.0), (BOX_CENTER.z + BOX_SIZE.x / 2.0));
 	triangles[11].v2 = vec3( (BOX_CENTER.x - BOX_SIZE.x / 2.0), (BOX_CENTER.y + BOX_SIZE.x / 2.0), (BOX_CENTER.z - BOX_SIZE.x / 2.0));
 	triangles[11].v3 = vec3( (BOX_CENTER.x + BOX_SIZE.x / 2.0), (BOX_CENTER.y + BOX_SIZE.x / 2.0), (BOX_CENTER.z - BOX_SIZE.x / 2.0));
 	triangles[11].MaterialIdx = int(BOX_COLOR.x);
+	triangles[11].MaterialType = int(BOX_MATERIAL.x);
 
 	// bottom
 	triangles[12].v1 = vec3( (BOX_CENTER.x + BOX_SIZE.x / 2.0), (BOX_CENTER.y - BOX_SIZE.x / 2.0), (BOX_CENTER.z + BOX_SIZE.x / 2.0));
 	triangles[12].v2 = vec3( (BOX_CENTER.x + BOX_SIZE.x / 2.0), (BOX_CENTER.y - BOX_SIZE.x / 2.0), (BOX_CENTER.z - BOX_SIZE.x / 2.0));
 	triangles[12].v3 = vec3( (BOX_CENTER.x - BOX_SIZE.x / 2.0), (BOX_CENTER.y - BOX_SIZE.x / 2.0), (BOX_CENTER.z + BOX_SIZE.x / 2.0));
 	triangles[12].MaterialIdx = int(BOX_COLOR.x);
+	triangles[12].MaterialType = int(BOX_MATERIAL.x);
 	
 	triangles[13].v1 = vec3( (BOX_CENTER.x - BOX_SIZE.x / 2.0), (BOX_CENTER.y - BOX_SIZE.x / 2.0), (BOX_CENTER.z - BOX_SIZE.x / 2.0));
 	triangles[13].v2 = vec3( (BOX_CENTER.x - BOX_SIZE.x / 2.0), (BOX_CENTER.y - BOX_SIZE.x / 2.0), (BOX_CENTER.z + BOX_SIZE.x / 2.0));
 	triangles[13].v3 = vec3( (BOX_CENTER.x + BOX_SIZE.x / 2.0), (BOX_CENTER.y - BOX_SIZE.x / 2.0), (BOX_CENTER.z - BOX_SIZE.x / 2.0));
 	triangles[13].MaterialIdx = int(BOX_COLOR.x);
+	triangles[13].MaterialType = int(BOX_MATERIAL.x);
 
 	// right
 	triangles[14].v1 = vec3( (BOX_CENTER.x + BOX_SIZE.x / 2.0), (BOX_CENTER.y - BOX_SIZE.x / 2.0), (BOX_CENTER.z - BOX_SIZE.x / 2.0));
 	triangles[14].v2 = vec3( (BOX_CENTER.x + BOX_SIZE.x / 2.0), (BOX_CENTER.y + BOX_SIZE.x / 2.0), (BOX_CENTER.z - BOX_SIZE.x / 2.0));
 	triangles[14].v3 = vec3( (BOX_CENTER.x + BOX_SIZE.x / 2.0), (BOX_CENTER.y - BOX_SIZE.x / 2.0), (BOX_CENTER.z + BOX_SIZE.x / 2.0));
 	triangles[14].MaterialIdx = int(BOX_COLOR.x);
+	triangles[14].MaterialType = int(BOX_MATERIAL.x);
 	
 	triangles[15].v1 = vec3( (BOX_CENTER.x + BOX_SIZE.x / 2.0), (BOX_CENTER.y + BOX_SIZE.x / 2.0), (BOX_CENTER.z + BOX_SIZE.x / 2.0));
 	triangles[15].v2 = vec3( (BOX_CENTER.x + BOX_SIZE.x / 2.0), (BOX_CENTER.y - BOX_SIZE.x / 2.0), (BOX_CENTER.z + BOX_SIZE.x / 2.0));
 	triangles[15].v3 = vec3( (BOX_CENTER.x + BOX_SIZE.x / 2.0), (BOX_CENTER.y + BOX_SIZE.x / 2.0), (BOX_CENTER.z - BOX_SIZE.x / 2.0));
 	triangles[15].MaterialIdx = int(BOX_COLOR.x);
+	triangles[15].MaterialType = int(BOX_MATERIAL.x);
 
 	// left
 	triangles[16].v1 = vec3( (BOX_CENTER.x - BOX_SIZE.x / 2.0), (BOX_CENTER.y - BOX_SIZE.x / 2.0), (BOX_CENTER.z - BOX_SIZE.x / 2.0));
 	triangles[16].v2 = vec3( (BOX_CENTER.x - BOX_SIZE.x / 2.0), (BOX_CENTER.y + BOX_SIZE.x / 2.0), (BOX_CENTER.z + BOX_SIZE.x / 2.0));
 	triangles[16].v3 = vec3( (BOX_CENTER.x - BOX_SIZE.x / 2.0), (BOX_CENTER.y + BOX_SIZE.x / 2.0), (BOX_CENTER.z - BOX_SIZE.x / 2.0));
 	triangles[16].MaterialIdx = int(BOX_COLOR.x);
+	triangles[16].MaterialType = int(BOX_MATERIAL.x);
 	
 	triangles[17].v1 = vec3( (BOX_CENTER.x - BOX_SIZE.x / 2.0), (BOX_CENTER.y - BOX_SIZE.x / 2.0), (BOX_CENTER.z - BOX_SIZE.x / 2.0));
 	triangles[17].v2 = vec3( (BOX_CENTER.x - BOX_SIZE.x / 2.0), (BOX_CENTER.y - BOX_SIZE.x / 2.0), (BOX_CENTER.z + BOX_SIZE.x / 2.0));
 	triangles[17].v3 = vec3( (BOX_CENTER.x - BOX_SIZE.x / 2.0), (BOX_CENTER.y + BOX_SIZE.x / 2.0), (BOX_CENTER.z + BOX_SIZE.x / 2.0));
 	triangles[17].MaterialIdx = int(BOX_COLOR.x);
+	triangles[17].MaterialType = int(BOX_MATERIAL.x);
 
 	// back
 	triangles[18].v1 = vec3( (BOX_CENTER.x - BOX_SIZE.x / 2.0), (BOX_CENTER.y - BOX_SIZE.x / 2.0), (BOX_CENTER.z + BOX_SIZE.x / 2.0));
 	triangles[18].v2 = vec3( (BOX_CENTER.x + BOX_SIZE.x / 2.0), (BOX_CENTER.y - BOX_SIZE.x / 2.0), (BOX_CENTER.z + BOX_SIZE.x / 2.0));
 	triangles[18].v3 = vec3( (BOX_CENTER.x - BOX_SIZE.x / 2.0), (BOX_CENTER.y + BOX_SIZE.x / 2.0), (BOX_CENTER.z + BOX_SIZE.x / 2.0));
 	triangles[18].MaterialIdx = int(BOX_COLOR.x);
+	triangles[18].MaterialType = int(BOX_MATERIAL.x);
 	
 	triangles[19].v1 = vec3( (BOX_CENTER.x + BOX_SIZE.x / 2.0), (BOX_CENTER.y + BOX_SIZE.x / 2.0), (BOX_CENTER.z + BOX_SIZE.x / 2.0));
 	triangles[19].v2 = vec3( (BOX_CENTER.x - BOX_SIZE.x / 2.0), (BOX_CENTER.y + BOX_SIZE.x / 2.0), (BOX_CENTER.z + BOX_SIZE.x / 2.0));
 	triangles[19].v3 = vec3( (BOX_CENTER.x + BOX_SIZE.x / 2.0), (BOX_CENTER.y - BOX_SIZE.x / 2.0), (BOX_CENTER.z + BOX_SIZE.x / 2.0));
 	triangles[19].MaterialIdx = int(BOX_COLOR.x);
+	triangles[19].MaterialType = int(BOX_MATERIAL.x);
 
 	// front
 	triangles[20].v1 = vec3( (BOX_CENTER.x - BOX_SIZE.x / 2.0), (BOX_CENTER.y - BOX_SIZE.x / 2.0), (BOX_CENTER.z - BOX_SIZE.x / 2.0));
 	triangles[20].v2 = vec3( (BOX_CENTER.x + BOX_SIZE.x / 2.0), (BOX_CENTER.y - BOX_SIZE.x / 2.0), (BOX_CENTER.z - BOX_SIZE.x / 2.0));
 	triangles[20].v3 = vec3( (BOX_CENTER.x - BOX_SIZE.x / 2.0), (BOX_CENTER.y + BOX_SIZE.x / 2.0), (BOX_CENTER.z - BOX_SIZE.x / 2.0));
 	triangles[20].MaterialIdx = int(BOX_COLOR.x);
+	triangles[20].MaterialType = int(BOX_MATERIAL.x);
 	
 	triangles[21].v1 = vec3( (BOX_CENTER.x + BOX_SIZE.x / 2.0), (BOX_CENTER.y + BOX_SIZE.x / 2.0), (BOX_CENTER.z - BOX_SIZE.x / 2.0));
 	triangles[21].v2 = vec3( (BOX_CENTER.x - BOX_SIZE.x / 2.0), (BOX_CENTER.y + BOX_SIZE.x / 2.0), (BOX_CENTER.z - BOX_SIZE.x / 2.0));
 	triangles[21].v3 = vec3( (BOX_CENTER.x + BOX_SIZE.x / 2.0), (BOX_CENTER.y - BOX_SIZE.x / 2.0), (BOX_CENTER.z - BOX_SIZE.x / 2.0));
 	triangles[21].MaterialIdx = int(BOX_COLOR.x);
+	triangles[21].MaterialType = int(BOX_MATERIAL.x);
 
 	
 	/** SPHERES **/
@@ -389,6 +414,7 @@ bool Raytrace(Ray ray, float start, float final, inout SIntersection intersect )
 	float test   = start;
 	
 	int		  MaterialIdx;
+	int		MaterialType;
 	STriangle triangle;
 	SSphere	  sphere;
 	
@@ -416,6 +442,7 @@ bool Raytrace(Ray ray, float start, float final, inout SIntersection intersect )
 	for (int i = 0; i < TRIANGLES_COUNT; i++) {
 		triangle 	= triangles[i];
 		MaterialIdx = triangle.MaterialIdx;
+		MaterialType = triangle.MaterialType;
 		
 		if (IntersectTriangle(ray, triangle.v1, triangle.v2, triangle.v3, test) && test < intersect.Time ) {
 			intersect.Time   = test;
@@ -426,7 +453,7 @@ bool Raytrace(Ray ray, float start, float final, inout SIntersection intersect )
 			intersect.LightCoeffs    = materials[MaterialIdx].LightCoeffs;
 			intersect.ReflectionCoef = materials[MaterialIdx].ReflectionCoef;
 			intersect.RefractionCoef = materials[MaterialIdx].RefractionCoef;
-			intersect.MaterialType	 = materials[MaterialIdx].MaterialType;
+			intersect.MaterialType	 = MaterialType;
 			
 			result = true;
 		}
@@ -492,6 +519,25 @@ void main ( void ) {
 					break;
 					
 				}
+				case REFRACTION:{
+					float n;
+					float Normal;
+					if(dot(ray.Direction, intersect.Normal) < 0){
+						n = 1.0 / intersect.RefractionCoef;
+						Normal = 1;
+					}
+					else{
+						n = intersect.RefractionCoef;
+						Normal = -1;
+					}
+					vec3 refractDiraction = normalize(refract(ray.Direction, intersect.Normal * Normal, n));
+					STracingRay refractRay = STracingRay(
+						Ray(intersect.Point + refractDiraction * EPSILON, refractDiraction),
+						sray.contribution, sray.depth + 1
+						);
+					pushRay(refractRay);
+					break;
+				}
 				
 				case MIRROR_REFLECTION: {
 				
@@ -505,7 +551,9 @@ void main ( void ) {
 					vec3 reflectDirection = reflect(ray.Direction, intersect.Normal);
 					
 					float contribution = sray.contribution * intersect.ReflectionCoef;
-					STracingRay reflectRay = STracingRay(Ray(intersect.Point + reflectDirection * EPSILON, reflectDirection), contribution, sray.depth + 1);
+					STracingRay reflectRay = STracingRay(
+						Ray(intersect.Point + reflectDirection * EPSILON, reflectDirection),
+						contribution, sray.depth + 1);
 					
 					pushRay(reflectRay);
 					break;
